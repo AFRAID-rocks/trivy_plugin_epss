@@ -1,0 +1,7 @@
+.PHONY: clean build
+
+clean:
+	rm -rf count
+
+build:
+	go build -o epss .
