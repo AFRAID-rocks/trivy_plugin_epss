@@ -70,19 +70,25 @@ func run() error {
 	for _, result := range report.Results {
 		for i := range result.Vulnerabilities {
 			vuln := &result.Vulnerabilities[i]
-			if score, ok := epssScores[vuln.VulnerabilityID]; ok {
-				percentile := epssPercentiles[vuln.VulnerabilityID]
-				date := epssDates[vuln.VulnerabilityID]
+			score, hasScore := epssScores[vuln.VulnerabilityID]
+			percentile, hasPercentile := epssPercentiles[vuln.VulnerabilityID]
+			date, hasDate := epssDates[vuln.VulnerabilityID]
 
-				// Create map to store EPSS score as custom data
-				customData := map[string]interface{}{
-					"epss_score":      score,
-					"epss_percentile": percentile,
-					"epss_date":       date,
-					"epss_source":     "FIRST.org",
-				}
-				vuln.Custom = customData
+			// Create map to store EPSS score as custom data
+			customData := map[string]interface{}{
+				"epss_score":      "N/A",
+				"epss_percentile": "N/A",
+				"epss_date":       "N/A",
+				"epss_source":     "FIRST.org",
 			}
+
+			if hasScore && hasPercentile && hasDate {
+				customData["epss_score"] = score
+				customData["epss_percentile"] = percentile
+				customData["epss_date"] = date
+			}
+			
+			vuln.Custom = customData
 		}
 	}
 
